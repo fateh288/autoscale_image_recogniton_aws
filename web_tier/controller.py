@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import threading
 import time
+import auto_scaler
 
 os.environ['AWS_PROFILE'] = "baadal"
 os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
@@ -46,23 +47,14 @@ def response_queue_polling_service():
         time.sleep(5)
 
 
-def auto_scaling_service():
-    print("auto scaling service started")
-    max_instances = 20
-    while True:
-        # get message count in queue
-        attributes = sqs_client.get_queue_attributes(
-            QueueUrl=request_queue_url,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
-        message_count = int(attributes['Attributes']['ApproximateNumberOfMessages'])
-        print(f"Message count: {message_count}")
+response_queue_thread = threading.Thread(target=response_queue_polling_service)
+response_queue_thread.setDaemon(True)
+response_queue_thread.start()
 
-        time.sleep(5)
+auto_scaler_thread = threading.Thread(target=auto_scaler.auto_scaling_service)
+auto_scaler_thread.setDaemon(True)
+auto_scaler_thread.start()
 
-thread = threading.Thread(target=response_queue_polling_service)
-thread.setDaemon(True)
-thread.start()
 
 def get_result(image_name):
     while True:
