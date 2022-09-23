@@ -38,7 +38,7 @@ def classify_service():
         print("processing"+image_name, flush=True)
         image_location = '/home/ubuntu/images/'
         img_abs_path = f'{image_location}{image_name}'
-        s3_client.download_file('imagesbucketcse546',image_name,image_location)
+        s3_client.download_file('imagesbucketcse546',image_name,img_abs_path)
         cmd = f"sudo -u ubuntu /usr/bin/python3 /home/ubuntu/classifier/image_classification.py {img_abs_path}"
         print("cmd=",cmd, flush=True)
         image_classifier_command_output_copy = subprocess.check_output(cmd, shell=True)
