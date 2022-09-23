@@ -14,13 +14,13 @@ def auto_scaling_service():
     os.environ['AWS_PROFILE'] = "baadal"
     os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
 
-    max_instances = 5
+    max_instances = 2
 
     sqs_client = boto3.client('sqs', region_name='us-east-1')
 
     queue_url = 'https://sqs.us-east-1.amazonaws.com/693518781741/image_classification_queue'
 
-    ALWAYS_RUNNING_INSTANCE_SET = set(['i-01e169412a2fa0a74', 'i-03616ae721ca859f2'])
+    ALWAYS_RUNNING_INSTANCE_SET = set(['i-01e169412a2fa0a74', 'i-03616ae721ca859f2', "i-02c401eecf5abafd7"])
     universal_instance_number = 2
     executor = ThreadPoolExecutor(max_instances)
     future_set = set()
@@ -83,4 +83,4 @@ def auto_scaling_service():
                 #ec2_utils.terminate_instances(to_terminate_list)
                 pass
 
-        time.sleep(1)
+        time.sleep(5)

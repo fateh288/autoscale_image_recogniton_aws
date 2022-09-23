@@ -17,7 +17,7 @@ def create_app_tier_instance(instance_name):
     start_time = time.time()
     print("creating app tier instance")
     resp = ec2_client.run_instances(
-        ImageId='ami-0bdd4c3994d770e25',
+        ImageId='ami-078daff4c387622fd',
         MinCount=1,
         MaxCount=1,
         InstanceType='t2.micro',

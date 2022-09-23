@@ -36,11 +36,12 @@ def classify_service():
         request_receipt_handle = response['Messages'][0]['ReceiptHandle']
         image_name = response['Messages'][0]['Body']
         print("processing"+image_name, flush=True)
-
-        image_location = f'/home/ubuntu/images/{image_name}'
+        image_location = '/home/ubuntu/images/'
+        img_abs_path = f'{image_location}{image_name}'
         s3_client.download_file('imagesbucketcse546',image_name,image_location)
-        
-        image_classifier_command_output_copy = subprocess.check_output(f"/usr/bin/python3 /home/ubuntu/classifier/image_classification.py {image_location}", shell=True)
+        cmd = f"sudo -u ubuntu /usr/bin/python3 /home/ubuntu/classifier/image_classification.py {img_abs_path}"
+        print("cmd=",cmd, flush=True)
+        image_classifier_command_output_copy = subprocess.check_output(cmd, shell=True)
         image_classifier_command_output = image_classifier_command_output_copy.decode("utf-8") 
         im_name, inferred_class = image_classifier_command_output.replace("\n","").split(",")
         print(im_name, inferred_class, flush=True)
