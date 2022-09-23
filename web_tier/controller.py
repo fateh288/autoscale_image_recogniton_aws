@@ -43,7 +43,7 @@ def response_queue_polling_service():
                 )
                 print("deleted "+image_name+":"+label+" from response queue")
 
-            print("response_map=",response_map, file=sys.stderr)
+            # print("response_map=",response_map, file=sys.stderr)
         time.sleep(5)
 
 

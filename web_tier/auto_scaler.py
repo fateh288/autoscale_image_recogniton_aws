@@ -14,14 +14,14 @@ def auto_scaling_service():
     os.environ['AWS_PROFILE'] = "baadal"
     os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
 
-    max_instances = 2
+    max_instances = 20
 
     sqs_client = boto3.client('sqs', region_name='us-east-1')
 
     queue_url = 'https://sqs.us-east-1.amazonaws.com/693518781741/image_classification_queue'
 
-    ALWAYS_RUNNING_INSTANCE_SET = set(['i-01e169412a2fa0a74', 'i-03616ae721ca859f2', "i-02c401eecf5abafd7"])
-    universal_instance_number = 2
+    ALWAYS_RUNNING_INSTANCE_SET = set(['i-01e169412a2fa0a74'])
+    universal_instance_number = 1
     executor = ThreadPoolExecutor(max_instances)
     future_set = set()
 
@@ -44,7 +44,6 @@ def auto_scaling_service():
 
 
         if message_count > instance_count:
-
             num_instances_to_launch = min(message_count-instance_count, max_instances-instance_count)
             if num_instances_to_launch>0:
                 print(f"Launching {num_instances_to_launch} instances")
@@ -60,27 +59,15 @@ def auto_scaling_service():
                     #future_set.add(future)
                     #ec2_utils.create_app_tier_instance(instance_name)
                     universal_instance_number += 1
-        
-        # print("Current future set size: ", len(future_set))
-        for future in future_set.copy():
-            if future.done():
-                instance_id = future.result()
-                print(f"Launch instance using future completed for: {instance_id}")
-                future_set.remove(future)
-        print("Current future set size: ", len(future_set))
-            
-            #time.sleep(60)
-            
-
-        if message_count == 0:
+        elif message_count == 0:
             print("No messages in queue",file=sys.stderr)
             to_terminate_list = []
             for instance_id, status in instance_status_map.items():
                 if instance_id not in ALWAYS_RUNNING_INSTANCE_SET and (status == 'running' or status == 'pending'):
                     to_terminate_list.append(instance_id)
             if to_terminate_list:
-                #print(f"Terminating instances: {to_terminate_list}",file=sys.stderr)
-                #ec2_utils.terminate_instances(to_terminate_list)
+                print(f"Terminating instances: {to_terminate_list}",file=sys.stderr)
+                ec2_utils.terminate_instances(to_terminate_list)
                 pass
 
-        time.sleep(5)
+        time.sleep(100)
