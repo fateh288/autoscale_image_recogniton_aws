@@ -9,10 +9,15 @@ os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
 ec2_client = boto3.client('ec2', region_name='us-east-1')
 
 def create_app_tier_instance(instance_name):
+    with open('app_tier_user_data.sh', 'r') as f:
+        to_execute_commands = f.read()
+    
+    print(f"Execution commands on remote instance: {to_execute_commands}")
+
     start_time = time.time()
     print("creating app tier instance")
     resp = ec2_client.run_instances(
-        ImageId='ami-056eacb4147162daa',
+        ImageId='ami-0bdd4c3994d770e25',
         MinCount=1,
         MaxCount=1,
         InstanceType='t2.micro',
@@ -30,7 +35,7 @@ def create_app_tier_instance(instance_name):
                 ]
             }
         ],
-        UserData="file://app_tier_user_data.sh"
+        UserData=to_execute_commands
     )
 
     #https://stackoverflow.com/questions/49622575/schedule-to-start-an-ec2-instance-and-run-a-python-script-within-it

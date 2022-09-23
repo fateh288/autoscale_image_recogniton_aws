@@ -20,7 +20,6 @@ with open('/home/ubuntu/classifier/imagenet-labels.json') as f:
     valid_labels = set(json.load(f))
 
 def classify_service():
-    
     def is_valid_inferred_class(inf_class):
         if inf_class in valid_labels:
             return True
@@ -36,33 +35,34 @@ def classify_service():
     if 'Messages' in response:
         request_receipt_handle = response['Messages'][0]['ReceiptHandle']
         image_name = response['Messages'][0]['Body']
-        print("processing"+image_name)
+        print("processing"+image_name, flush=True)
 
         image_location = f'/home/ubuntu/images/{image_name}'
         s3_client.download_file('imagesbucketcse546',image_name,image_location)
         
-        image_classifier_command_output_copy = subprocess.check_output(f"python3 /home/ubuntu/classifier/image_classification.py {image_location}", shell=True)
+        image_classifier_command_output_copy = subprocess.check_output(f"/usr/bin/python3 /home/ubuntu/classifier/image_classification.py {image_location}", shell=True)
         image_classifier_command_output = image_classifier_command_output_copy.decode("utf-8") 
         im_name, inferred_class = image_classifier_command_output.replace("\n","").split(",")
-        print(im_name, inferred_class)
+        print(im_name, inferred_class, flush=True)
 
 
         if is_valid_inferred_class(inferred_class):
-            
-            s3_client.put_object(Bucket='classificationresultscse546', Key=im_name, ContentBody=image_classifier_command_output_copy, ContentType = "text/plain")
+            #TODO check Body param in the s3 bucket whether visible or not
+            s3_client.put_object(Bucket='classificationresultscse546', Key=im_name, Body=image_classifier_command_output_copy, ContentType = "text/plain")
             
             delete_from_request_queue_resp = sqs_client.delete_message(
                 QueueUrl=request_queue_url,
                 ReceiptHandle=request_receipt_handle,
             )
             
-            print("deleted "+image_name+" from request queue")
+            print("deleted "+image_name+" from request queue", flush=True)
             
             send_to_response_queue_resp = sqs_client.send_message(
                 QueueUrl=response_queue_url,
                 MessageBody=image_name+":"+inferred_class
             )
-            print("sent "+image_name+":"+inferred_class+" to response queue")
+            print("sent "+image_name+":"+inferred_class+" to response queue", flush=True)
 
-while True:
+print("Starting classification service", flush=True)
+while True:        
     classify_service()

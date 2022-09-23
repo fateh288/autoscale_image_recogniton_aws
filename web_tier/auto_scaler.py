@@ -46,19 +46,20 @@ def auto_scaling_service():
         if message_count > instance_count:
 
             num_instances_to_launch = min(message_count-instance_count, max_instances-instance_count)
-            print(f"Launching {num_instances_to_launch} instances")
-            # with Pool(processes=num_instances_to_launch) as pool:
-            #     instance_names = [f'app_tier_instance_{universal_instance_number}' for i in range(num_instances_to_launch)]
-            #     instance_ids_launched = pool.map(ec2_utils.create_app_tier_instance, instance_names)
-            #     print(f"Launched instances: {instance_ids_launched}")
-            
-            for i in range(num_instances_to_launch):
-                #instance_names = [f'app_tier_instance_{universal_instance_number}' for i in range(universal_instance_number, universal_instance_number+num_instances_to_launch+1)]
-                instance_name = f'app_tier_instance_{universal_instance_number}'
-                future = executor.submit(ec2_utils.create_app_tier_instance, instance_name)
-                #future_set.add(future)
-                #ec2_utils.create_app_tier_instance(instance_name)
-                universal_instance_number += 1
+            if num_instances_to_launch>0:
+                print(f"Launching {num_instances_to_launch} instances")
+                # with Pool(processes=num_instances_to_launch) as pool:
+                #     instance_names = [f'app_tier_instance_{universal_instance_number}' for i in range(num_instances_to_launch)]
+                #     instance_ids_launched = pool.map(ec2_utils.create_app_tier_instance, instance_names)
+                #     print(f"Launched instances: {instance_ids_launched}")
+                
+                for i in range(num_instances_to_launch):
+                    #instance_names = [f'app_tier_instance_{universal_instance_number}' for i in range(universal_instance_number, universal_instance_number+num_instances_to_launch+1)]
+                    instance_name = f'app_tier_instance_{universal_instance_number}'
+                    future = executor.submit(ec2_utils.create_app_tier_instance, instance_name)
+                    #future_set.add(future)
+                    #ec2_utils.create_app_tier_instance(instance_name)
+                    universal_instance_number += 1
         
         # print("Current future set size: ", len(future_set))
         for future in future_set.copy():
@@ -78,7 +79,8 @@ def auto_scaling_service():
                 if instance_id not in ALWAYS_RUNNING_INSTANCE_SET and (status == 'running' or status == 'pending'):
                     to_terminate_list.append(instance_id)
             if to_terminate_list:
-                print(f"Terminating instances: {to_terminate_list}",file=sys.stderr)
-                ec2_utils.terminate_instances(to_terminate_list)
+                #print(f"Terminating instances: {to_terminate_list}",file=sys.stderr)
+                #ec2_utils.terminate_instances(to_terminate_list)
+                pass
 
-        time.sleep(5)
+        time.sleep(1)
