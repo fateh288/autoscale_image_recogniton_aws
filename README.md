@@ -1,3 +1,3 @@
-flask --app controller run --host=0.0.0.0
+nohup flask --app controller run --host=172.31.94.81 -p 8080
 
-python3 workload_generator.py --num_request 3 --url 'http://172.31.94.81:5000/classify_image' --image_folder "/home/ubuntu/CSE546_Sum22_workload_generator/imagenet-100/"
+python3 multithread_workload_generator.py --num_request 100 --url 'http://172.31.94.81:5000/classify_image' --image_folder imagenet-100/

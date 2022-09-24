@@ -31,7 +31,7 @@ def classify_service():
         MaxNumberOfMessages=1,
         WaitTimeSeconds=10,
     )
-    #print(response)
+
     if 'Messages' in response:
         request_receipt_handle = response['Messages'][0]['ReceiptHandle']
         image_name = response['Messages'][0]['Body']
@@ -48,7 +48,6 @@ def classify_service():
 
 
         if is_valid_inferred_class(inferred_class):
-            #TODO check Body param in the s3 bucket whether visible or not
             s3_client.put_object(Bucket='classificationresultscse546', Key=im_name, Body=image_classifier_command_output_copy, ContentType = "text/plain")
             
             delete_from_request_queue_resp = sqs_client.delete_message(

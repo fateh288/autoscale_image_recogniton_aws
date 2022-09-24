@@ -42,8 +42,6 @@ def response_queue_polling_service():
                     ReceiptHandle=response_receipt_handle,
                 )
                 print("deleted "+image_name+":"+label+" from response queue")
-
-            # print("response_map=",response_map, file=sys.stderr)
         time.sleep(5)
 
 

@@ -65,15 +65,9 @@ def get_instance_statuses():
     #print("resp=",resp)
     for instance in resp['InstanceStatuses']:
         instance_status_map[instance['InstanceId']] = instance['InstanceState']['Name']
-    #print("instance_status_map=",instance_status_map)
     return instance_status_map
 
 def terminate_instances(instance_id_list):
     ec2_client.terminate_instances(
         InstanceIds=instance_id_list
     )
-
-#instance_name = 'app_tier_instance_3'
-#create_app_tier_instance(instance_name)
-#time.sleep(10)
-# get_instance_statuses()

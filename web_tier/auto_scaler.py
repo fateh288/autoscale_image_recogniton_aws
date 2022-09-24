@@ -1,8 +1,5 @@
-
-
-
 def auto_scaling_service():
-    # TOD: imports not working when imported from another thread, so placed here. FInd right way to do this.
+    # TODO: imports not working when imported from another thread, so placed here. FInd right way to do this.
     import time
     import boto3
     import os
@@ -39,7 +36,6 @@ def auto_scaling_service():
         for instance_id, status in instance_status_map.items():
             if status == 'running' or status == 'pending':
                 instance_count += 1
-        #instance_count += len(future_set)
         print(f"App Tier Instance count: {instance_count}")
 
 
@@ -47,17 +43,10 @@ def auto_scaling_service():
             num_instances_to_launch = min(message_count-instance_count, max_instances-instance_count)
             if num_instances_to_launch>0:
                 print(f"Launching {num_instances_to_launch} instances")
-                # with Pool(processes=num_instances_to_launch) as pool:
-                #     instance_names = [f'app_tier_instance_{universal_instance_number}' for i in range(num_instances_to_launch)]
-                #     instance_ids_launched = pool.map(ec2_utils.create_app_tier_instance, instance_names)
-                #     print(f"Launched instances: {instance_ids_launched}")
                 
                 for i in range(num_instances_to_launch):
-                    #instance_names = [f'app_tier_instance_{universal_instance_number}' for i in range(universal_instance_number, universal_instance_number+num_instances_to_launch+1)]
                     instance_name = f'app_tier_instance_{universal_instance_number}'
                     future = executor.submit(ec2_utils.create_app_tier_instance, instance_name)
-                    #future_set.add(future)
-                    #ec2_utils.create_app_tier_instance(instance_name)
                     universal_instance_number += 1
         elif message_count == 0:
             print("No messages in queue",file=sys.stderr)
