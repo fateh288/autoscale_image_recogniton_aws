@@ -75,3 +75,8 @@ def classify_image():
     res = get_result(filename)
     print("filename=",filename,"res=",res, file=sys.stderr)
     return res
+
+@app.route("/clear", methods=['POST'])
+def clear_cache():
+    response_map = {}
+    return "OK"
